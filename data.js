@@ -18,25 +18,23 @@ window.siteData = {
     "Lore: Golden hour walks became our default reset button."
   ],
   gallery: {
-    irl: [
-      { caption: "First coffee date", image: "assets/images/irl-1.jpg" },
-      { caption: "Sunset walk", image: "assets/images/irl-2.jpg" }
+    "Real life": [
+      { caption: "Real life", image: "assets/images/20260323_145617598_iOS.jpg" }
+    ],
+    Alaadin: [
+      { caption: "Alaadin", image: "assets/images/39e8eaec-2329-4a23-99c0-b12c60cb31f7.png" }
     ],
     lego: [
-      { caption: "Mini couple build", image: "assets/images/lego-1.jpg" },
-      { caption: "Yellow brick moment", image: "assets/images/lego-2.jpg" }
+      { caption: "lego", image: "assets/images/lego.png" }
     ],
     "studio ghibli": [
-      { caption: "Soft sky memory", image: "assets/images/ghibli-1.jpg" },
-      { caption: "Train station scene", image: "assets/images/ghibli-2.jpg" }
+      { caption: "studio ghibli", image: "assets/images/ef65e6df-df6d-445a-bb36-ab2a22d0758f.png" }
     ],
-    "pixel art": [
-      { caption: "8-bit date night", image: "assets/images/pixel-1.jpg" },
-      { caption: "Pixel sunrise", image: "assets/images/pixel-2.jpg" }
+    pixaar: [
+      { caption: "pixaar", image: "assets/images/2f4af3f0-ccaf-4032-a621-65cb85f8a07a.png" }
     ],
-    "Aladdin and Jasmine": [
-      { caption: "Magic carpet vibes", image: "assets/images/aladdin-1.jpg" },
-      { caption: "A whole new world", image: "assets/images/aladdin-2.jpg" }
+    Toys: [
+      { caption: "Toys", image: "assets/images/7357e444-519e-4ac4-a4af-a0113fab9622.png" }
     ]
   },
   timeline: [

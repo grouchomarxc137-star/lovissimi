@@ -109,6 +109,61 @@
     setInterval(updateCounters, 1000);
   }
 
+
+  function initLockedHuntOverlay() {
+    const lockedLink = document.querySelector('.locked-card[href="hunt.html"]');
+    const overlay = byId("lock-overlay");
+    const modal = byId("lock-modal");
+    const form = byId("lock-form");
+    const input = byId("lock-input");
+    const error = byId("lock-error");
+    const cancel = byId("lock-cancel");
+
+    if (!lockedLink || !overlay || !modal || !form || !input || !error || !cancel) return;
+
+    function openOverlay() {
+      overlay.classList.remove("hidden");
+      overlay.setAttribute("aria-hidden", "false");
+      error.textContent = "";
+      input.value = "";
+      setTimeout(function () { input.focus(); }, 0);
+    }
+
+    function closeOverlay() {
+      overlay.classList.add("hidden");
+      overlay.setAttribute("aria-hidden", "true");
+      modal.classList.remove("shake");
+    }
+
+    lockedLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      openOverlay();
+    });
+
+    cancel.addEventListener("click", function () {
+      closeOverlay();
+    });
+
+    overlay.addEventListener("click", function (event) {
+      if (event.target === overlay) {
+        closeOverlay();
+      }
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const value = input.value.trim().toLowerCase();
+      if (value === String(data.hunt.password || "").toLowerCase()) {
+        window.location.href = "hunt.html";
+        return;
+      }
+      error.textContent = "Wrong password.";
+      modal.classList.remove("shake");
+      void modal.offsetWidth;
+      modal.classList.add("shake");
+    });
+  }
+
   function initHuntPage() {
     const huntForm = byId("hunt-form");
     const huntText = byId("hunt-text");
@@ -147,60 +202,168 @@
   }
 
   function initGalleryPage() {
-    const galleryTabs = byId("gallery-tabs");
     const galleryGrid = byId("gallery-grid");
-    if (!galleryTabs || !galleryGrid) return;
+    const lightbox = byId("gallery-lightbox");
+    const lightboxImg = byId("gallery-lightbox-image");
+    const lightboxCaption = byId("gallery-lightbox-caption");
+    const lightboxClose = byId("gallery-lightbox-close");
+    if (!galleryGrid) return;
 
-    function renderGalleryCategory(categoryName) {
-      galleryGrid.innerHTML = "";
-      const items = data.gallery[categoryName] || [];
-      items.forEach(function (item) {
-        const wrapper = document.createElement("article");
-        wrapper.className = "gallery-item";
+    function closeLightbox() {
+      if (!lightbox) return;
+      lightbox.classList.add("hidden");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
 
-        const img = document.createElement("img");
-        img.src = item.image;
-        img.alt = item.caption;
-        img.onerror = function () {
-          this.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='100%25' height='100%25' fill='%23f1dfaa'/><text x='50%25' y='50%25' text-anchor='middle' fill='%237a6745' font-size='16' font-family='sans-serif'>Add image file</text></svg>";
-        };
+    function openLightbox(src, caption) {
+      if (!lightbox || !lightboxImg || !lightboxCaption) return;
+      lightboxImg.src = src;
+      lightboxImg.alt = caption;
+      lightboxCaption.textContent = caption;
+      lightbox.classList.remove("hidden");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
 
-        const caption = document.createElement("p");
-        caption.textContent = item.caption;
-
-        wrapper.appendChild(img);
-        wrapper.appendChild(caption);
-        galleryGrid.appendChild(wrapper);
+    if (lightbox && lightboxClose) {
+      lightboxClose.addEventListener("click", closeLightbox);
+      lightbox.addEventListener("click", function (event) {
+        if (event.target === lightbox) closeLightbox();
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") closeLightbox();
       });
     }
 
-    const categories = Object.keys(data.gallery);
-    categories.forEach(function (category, index) {
-      const tab = document.createElement("button");
-      tab.className = "tab" + (index === 0 ? " active" : "");
-      tab.textContent = category;
-      tab.addEventListener("click", function () {
-        document.querySelectorAll(".tab").forEach(function (el) {
-          el.classList.remove("active");
-        });
-        tab.classList.add("active");
-        renderGalleryCategory(category);
-      });
-      galleryTabs.appendChild(tab);
-    });
+    galleryGrid.innerHTML = "";
+    const items = Object.values(data.gallery).flat();
 
-    if (categories.length > 0) renderGalleryCategory(categories[0]);
+    items.forEach(function (item, index) {
+      const wrapper = document.createElement("article");
+      wrapper.className = "gallery-item polaroid-item " + (index % 2 === 0 ? "tilt-left" : "tilt-right");
+
+      const img = document.createElement("img");
+      img.src = item.image;
+      img.alt = item.caption;
+      img.onerror = function () {
+        this.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='100%25' height='100%25' fill='%23f1dfaa'/><text x='50%25' y='50%25' text-anchor='middle' fill='%237a6745' font-size='16' font-family='sans-serif'>Add image file</text></svg>";
+      };
+      img.style.cursor = "zoom-in";
+      img.addEventListener("click", function () {
+        openLightbox(item.image, item.caption);
+      });
+
+      const caption = document.createElement("p");
+      caption.textContent = item.caption;
+
+      wrapper.appendChild(img);
+      wrapper.appendChild(caption);
+      galleryGrid.appendChild(wrapper);
+    });
   }
 
-  function initTimelinePage() {
-    const timelineList = byId("timeline-list");
-    if (!timelineList) return;
-    timelineList.innerHTML = "";
-    data.timeline.forEach(function (entry) {
-      const li = document.createElement("li");
-      li.innerHTML = `<strong>${entry.date} - ${entry.title}</strong><br>${entry.note}`;
-      timelineList.appendChild(li);
+  function initLoveBoardPage() {
+    const form = byId("love-board-form");
+    const list = byId("love-board-list");
+    const emptyState = byId("love-board-empty");
+    if (!form || !list || !emptyState) return;
+
+    const authorInput = byId("love-board-author");
+    const messageInput = byId("love-board-message");
+    let messages = [];
+
+    function renderMessages() {
+      list.innerHTML = "";
+      emptyState.style.display = messages.length === 0 ? "block" : "none";
+      list.classList.toggle("scrollable", messages.length > 4);
+
+      messages.forEach(function (item) {
+        const card = document.createElement("article");
+        card.className = "love-note";
+
+        const title = document.createElement("p");
+        title.className = "love-note-title";
+        title.textContent = item.author + " wrote:";
+
+        const text = document.createElement("p");
+        text.className = "love-note-text";
+        text.textContent = item.message;
+
+        const meta = document.createElement("div");
+        meta.className = "love-note-meta";
+
+        const date = document.createElement("small");
+        date.textContent = item.createdAt;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "note-remove";
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", async function () {
+          try {
+            const response = await fetch(`/api/messages/${item.id}`, {
+              method: "DELETE"
+            });
+            if (!response.ok) {
+              throw new Error("Delete failed");
+            }
+            await refreshMessages();
+          } catch (error) {
+            emptyState.textContent = "Could not remove message right now.";
+            emptyState.style.display = "block";
+          }
+        });
+
+        meta.appendChild(date);
+        meta.appendChild(removeBtn);
+        card.appendChild(title);
+        card.appendChild(text);
+        card.appendChild(meta);
+        list.appendChild(card);
+      });
+    }
+
+    async function refreshMessages() {
+      try {
+        const response = await fetch("/api/messages");
+        if (!response.ok) {
+          throw new Error("Fetch failed");
+        }
+        messages = await response.json();
+        renderMessages();
+      } catch (error) {
+        messages = [];
+        renderMessages();
+        emptyState.textContent = "Server not reachable. Start backend server.";
+        emptyState.style.display = "block";
+      }
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const author = authorInput.value.trim();
+      const message = messageInput.value.trim();
+      if (!author || !message) return;
+
+      try {
+        const response = await fetch("/api/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ author, message })
+        });
+        if (!response.ok) {
+          throw new Error("Save failed");
+        }
+        form.reset();
+        await refreshMessages();
+      } catch (error) {
+        emptyState.textContent = "Could not save message right now.";
+        emptyState.style.display = "block";
+      }
     });
+
+    refreshMessages();
   }
 
   function initLettersPage() {
@@ -264,11 +427,12 @@
   }
 
   initSharedHeader();
+  initLockedHuntOverlay();
   initMomentsPage();
   initHuntPage();
   initSignsPage();
   initGalleryPage();
-  initTimelinePage();
+  initLoveBoardPage();
   initLettersPage();
   initGamePage();
 })();
