@@ -15,11 +15,14 @@
     <section class="card hero">
       <p class="eyebrow">Chapter: Mini Game</p>
       <h2>Catch The Heart</h2>
+      <p class="subtitle">Compete for the all-time crown.</p>
       <p><a class="back-link" href="index.html">← Back to Home</a></p>
     </section>
+
     <section class="card">
       <p class="muted">Click the heart as many times as you can in 15 seconds.</p>
       <div class="game-panel">
+        <input id="game-player" type="text" placeholder="Your name" maxlength="24" />
         <button id="start-game">Start</button>
         <div class="game-stats">
           <span>Time: <strong id="game-time">15</strong>s</span>
@@ -29,11 +32,18 @@
       </div>
       <p id="game-message" class="muted"></p>
     </section>
+
+    <section class="card">
+      <h3>All-Time Leaderboard</h3>
+      <ol id="game-top-list" class="leader-list"></ol>
+      <h3>Recent Runs</h3>
+      <ol id="game-recent-list" class="leader-list"></ol>
+    </section>
   </main>
   <footer>
     <p>Built with love, care, and attention</p>
   </footer>
-  <script src="data.js?v=20260522d"></script>
-  <script src="script.js?v=20260522d"></script>
+  <script src="data.js?v=20260522f"></script>
+  <script src="script.js?v=20260522f"></script>
 </body>
 </html>

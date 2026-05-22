@@ -191,15 +191,223 @@
   }
 
   function initSignsPage() {
-    const signsList = byId("signs-list");
-    if (!signsList) return;
-    signsList.innerHTML = "";
-    data.signsLore.forEach(function (item) {
-      const li = document.createElement("li");
-      li.textContent = item;
-      signsList.appendChild(li);
+    const form = byId("stick-form");
+    const board = byId("stick-board");
+    const list = byId("stick-list");
+    const emptyState = byId("stick-empty");
+    if (!form || !board || !list || !emptyState) return;
+
+    const authorInput = byId("stick-author");
+    const messageInput = byId("stick-message");
+    let notes = [];
+
+    function noteColorClass(index) {
+      const colors = ["note-yellow", "note-peach", "note-cream", "note-gold"];
+      return colors[index % colors.length];
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    async function savePosition(id, x, y) {
+      try {
+        await fetch(`/api/stick-notes/${id}/position`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ x, y })
+        });
+      } catch (_err) {
+        // Ignore save-position failures silently.
+      }
+    }
+
+    function enableDrag(noteEl, item) {
+      let dragging = false;
+      let moved = false;
+      let startX = 0;
+      let startY = 0;
+      let startLeft = 0;
+      let startTop = 0;
+
+      function onMove(clientX, clientY) {
+        if (!dragging) return;
+        const dx = clientX - startX;
+        const dy = clientY - startY;
+        const boardRect = board.getBoundingClientRect();
+        const noteRect = noteEl.getBoundingClientRect();
+
+        const nextLeft = clamp(startLeft + dx, 0, boardRect.width - noteRect.width);
+        const nextTop = clamp(startTop + dy, 0, boardRect.height - noteRect.height);
+
+        noteEl.style.left = `${nextLeft}px`;
+        noteEl.style.top = `${nextTop}px`;
+
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+      }
+
+      function onEnd() {
+        if (!dragging) return;
+        dragging = false;
+        noteEl.classList.remove("dragging");
+
+        const x = parseFloat(noteEl.style.left) || 0;
+        const y = parseFloat(noteEl.style.top) || 0;
+        item.x = x;
+        item.y = y;
+        savePosition(item.id, x, y);
+
+        window.removeEventListener("mousemove", mouseMove);
+        window.removeEventListener("mouseup", mouseUp);
+        window.removeEventListener("touchmove", touchMove);
+        window.removeEventListener("touchend", touchEnd);
+      }
+
+      function mouseMove(e) { onMove(e.clientX, e.clientY); }
+      function mouseUp() { onEnd(); }
+      function touchMove(e) {
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+        onMove(t.clientX, t.clientY);
+      }
+      function touchEnd() { onEnd(); }
+
+      noteEl.addEventListener("mousedown", function (e) {
+        if (e.target.closest(".note-remove")) return;
+        dragging = true;
+        moved = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        startLeft = parseFloat(noteEl.style.left) || 0;
+        startTop = parseFloat(noteEl.style.top) || 0;
+        noteEl.classList.add("dragging");
+        window.addEventListener("mousemove", mouseMove);
+        window.addEventListener("mouseup", mouseUp);
+      });
+
+      noteEl.addEventListener("touchstart", function (e) {
+        if (e.target.closest(".note-remove")) return;
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+        dragging = true;
+        moved = false;
+        startX = t.clientX;
+        startY = t.clientY;
+        startLeft = parseFloat(noteEl.style.left) || 0;
+        startTop = parseFloat(noteEl.style.top) || 0;
+        noteEl.classList.add("dragging");
+        window.addEventListener("touchmove", touchMove, { passive: true });
+        window.addEventListener("touchend", touchEnd);
+      }, { passive: true });
+
+      noteEl.addEventListener("click", function (event) {
+        if (event.target.closest(".note-remove")) return;
+        if (moved) return;
+        noteEl.classList.toggle("open");
+      });
+    }
+
+    function renderNotes() {
+      list.innerHTML = "";
+      emptyState.style.display = notes.length === 0 ? "block" : "none";
+
+      const boardRect = board.getBoundingClientRect();
+      const cols = Math.max(1, Math.floor(boardRect.width / 180));
+
+      notes.forEach(function (item, index) {
+        const note = document.createElement("article");
+        note.className = "stick-note " + noteColorClass(index);
+
+        const title = document.createElement("p");
+        title.className = "stick-title";
+        title.textContent = item.author + " says:";
+
+        const text = document.createElement("p");
+        text.className = "stick-text";
+        text.textContent = item.message;
+        text.setAttribute("data-preview", item.message.length > 58 ? item.message.slice(0, 58) + "..." : item.message);
+
+        const meta = document.createElement("div");
+        meta.className = "stick-meta";
+
+        const date = document.createElement("small");
+        date.textContent = item.createdAt;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "note-remove";
+        removeBtn.textContent = "Delete";
+        removeBtn.addEventListener("click", async function () {
+          try {
+            const response = await fetch(`/api/stick-notes/${item.id}`, { method: "DELETE" });
+            if (!response.ok) throw new Error("Delete failed");
+            await refreshNotes();
+          } catch (error) {
+            emptyState.textContent = "Could not delete note right now.";
+            emptyState.style.display = "block";
+          }
+        });
+
+        meta.appendChild(date);
+        meta.appendChild(removeBtn);
+        note.appendChild(title);
+        note.appendChild(text);
+        note.appendChild(meta);
+
+        const defaultX = (index % cols) * 170 + 10;
+        const defaultY = Math.floor(index / cols) * 145 + 10;
+        const x = Number.isFinite(item.x) ? item.x : defaultX;
+        const y = Number.isFinite(item.y) ? item.y : defaultY;
+        note.style.left = `${x}px`;
+        note.style.top = `${y}px`;
+
+        enableDrag(note, item);
+        list.appendChild(note);
+      });
+    }
+
+    async function refreshNotes() {
+      try {
+        const response = await fetch("/api/stick-notes");
+        if (!response.ok) throw new Error("Fetch failed");
+        notes = await response.json();
+        renderNotes();
+      } catch (error) {
+        notes = [];
+        renderNotes();
+        emptyState.textContent = "Server not reachable. Start backend server.";
+        emptyState.style.display = "block";
+      }
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const author = authorInput.value.trim();
+      const message = messageInput.value.trim();
+      if (!author || !message) return;
+
+      try {
+        const response = await fetch("/api/stick-notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ author, message })
+        });
+        if (!response.ok) throw new Error("Save failed");
+        form.reset();
+        await refreshNotes();
+      } catch (error) {
+        emptyState.textContent = "Could not save note right now.";
+        emptyState.style.display = "block";
+      }
     });
+
+    window.addEventListener("resize", function () {
+      renderNotes();
+    });
+
+    refreshNotes();
   }
+
 
   function initGalleryPage() {
     const galleryGrid = byId("gallery-grid");
@@ -271,7 +479,39 @@
 
     const authorInput = byId("love-board-author");
     const messageInput = byId("love-board-message");
+    const boardShell = document.querySelector(".love-board-shell");
     let messages = [];
+
+    function showEnergyBurst() {
+      if (boardShell) {
+        boardShell.classList.remove("energy-pulse");
+        void boardShell.offsetWidth;
+        boardShell.classList.add("energy-pulse");
+      }
+
+      const burst = document.createElement("div");
+      burst.className = "energy-burst";
+      form.appendChild(burst);
+
+      const icons = ["💛", "🕊️", "💛", "💫", "🕊️", "💛", "💛"];
+      icons.forEach(function (icon, index) {
+        const particle = document.createElement("span");
+        particle.className = "energy-particle";
+        particle.textContent = icon;
+        const spread = (index - (icons.length - 1) / 2) * 18;
+        const jitter = Math.round((Math.random() - 0.5) * 10);
+        const dx = spread + jitter;
+        const dy = -70 - Math.round(Math.random() * 26);
+        particle.style.setProperty("--dx", dx + "px");
+        particle.style.setProperty("--dy", dy + "px");
+        particle.style.animationDelay = index * 0.035 + "s";
+        burst.appendChild(particle);
+      });
+
+      setTimeout(function () {
+        if (burst.parentNode) burst.parentNode.removeChild(burst);
+      }, 1200);
+    }
 
     function renderMessages() {
       list.innerHTML = "";
@@ -355,6 +595,7 @@
         if (!response.ok) {
           throw new Error("Save failed");
         }
+        showEnergyBurst();
         form.reset();
         await refreshMessages();
       } catch (error) {
@@ -367,20 +608,159 @@
   }
 
   function initLettersPage() {
-    const lettersList = byId("letters-list");
-    if (!lettersList) return;
+    const form = byId("letters-form");
+    const list = byId("letters-list");
+    const emptyState = byId("letters-empty");
+    if (!form || !list || !emptyState) return;
 
-    function redactText(text) {
-      return text.replace(/<redacted>/gi, '<span class="redacted">REDACTED</span>');
+    const authorInput = byId("letters-author");
+    const messageInput = byId("letters-message");
+    let letters = [];
+
+    function showSealPop() {
+      const stamp = document.createElement("div");
+      stamp.className = "seal-pop";
+      stamp.textContent = "SEALED 💌";
+      form.appendChild(stamp);
+      requestAnimationFrame(function () {
+        stamp.classList.add("show");
+      });
+      setTimeout(function () {
+        stamp.classList.remove("show");
+      }, 620);
+      setTimeout(function () {
+        if (stamp.parentNode) stamp.parentNode.removeChild(stamp);
+      }, 980);
     }
 
-    lettersList.innerHTML = "";
-    data.letters.forEach(function (text, idx) {
-      const letter = document.createElement("article");
-      letter.className = "letter";
-      letter.innerHTML = `<strong>Letter ${idx + 1}:</strong> ${redactText(text)}`;
-      lettersList.appendChild(letter);
+    function showUnsealHearts(target) {
+      const hearts = ["💛", "❤️", "💖"];
+      for (let i = 0; i < 5; i += 1) {
+        const heart = document.createElement("span");
+        heart.className = "unseal-heart";
+        heart.textContent = hearts[i % hearts.length];
+        heart.style.left = 18 + i * 16 + Math.floor(Math.random() * 8) + "%";
+        heart.style.animationDelay = i * 0.04 + "s";
+        target.appendChild(heart);
+        setTimeout(function () {
+          if (heart.parentNode) heart.parentNode.removeChild(heart);
+        }, 900);
+      }
+    }
+
+    function renderLetters() {
+      list.innerHTML = "";
+      emptyState.style.display = letters.length === 0 ? "block" : "none";
+      list.classList.toggle("scrollable", letters.length > 4);
+
+      letters.forEach(function (item) {
+        const envelope = document.createElement("article");
+        envelope.className = "envelope-letter";
+
+        const flap = document.createElement("div");
+        flap.className = "envelope-flap";
+
+        const body = document.createElement("div");
+        body.className = "envelope-body";
+
+        const title = document.createElement("p");
+        title.className = "envelope-title";
+        title.textContent = item.author + " wrote a sealed letter";
+
+        const hint = document.createElement("p");
+        hint.className = "envelope-hint";
+        hint.textContent = "Tap to open";
+
+        const content = document.createElement("div");
+        content.className = "envelope-content";
+
+        const text = document.createElement("p");
+        text.className = "envelope-text";
+        text.textContent = item.message;
+
+        const meta = document.createElement("div");
+        meta.className = "envelope-meta";
+
+        const date = document.createElement("small");
+        date.textContent = item.createdAt;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "note-remove";
+        removeBtn.textContent = "Delete";
+        removeBtn.addEventListener("click", async function (event) {
+          event.stopPropagation();
+          try {
+            const response = await fetch(`/api/letters/${item.id}`, { method: "DELETE" });
+            if (!response.ok) throw new Error("Delete failed");
+            await refreshLetters();
+          } catch (error) {
+            emptyState.textContent = "Could not delete letter right now.";
+            emptyState.style.display = "block";
+          }
+        });
+
+        meta.appendChild(date);
+        meta.appendChild(removeBtn);
+        content.appendChild(text);
+        content.appendChild(meta);
+
+        body.appendChild(title);
+        body.appendChild(hint);
+        body.appendChild(content);
+
+        envelope.appendChild(flap);
+        envelope.appendChild(body);
+
+        envelope.addEventListener("click", function () {
+          const isOpening = !envelope.classList.contains("open");
+          envelope.classList.toggle("open");
+          if (isOpening) {
+            showUnsealHearts(envelope);
+          }
+        });
+
+        list.appendChild(envelope);
+      });
+    }
+
+    async function refreshLetters() {
+      try {
+        const response = await fetch("/api/letters");
+        if (!response.ok) throw new Error("Fetch failed");
+        letters = await response.json();
+        renderLetters();
+      } catch (error) {
+        letters = [];
+        renderLetters();
+        emptyState.textContent = "Server not reachable. Start backend server.";
+        emptyState.style.display = "block";
+      }
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const author = authorInput.value.trim();
+      const message = messageInput.value.trim();
+      if (!author || !message) return;
+
+      try {
+        const response = await fetch("/api/letters", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ author, message })
+        });
+        if (!response.ok) throw new Error("Save failed");
+        showSealPop();
+        form.reset();
+        await refreshLetters();
+      } catch (error) {
+        emptyState.textContent = "Could not save letter right now.";
+        emptyState.style.display = "block";
+      }
     });
+
+    refreshLetters();
   }
 
   function initGamePage() {
@@ -389,18 +769,86 @@
     const gameTime = byId("game-time");
     const gameScore = byId("game-score");
     const gameMessage = byId("game-message");
+    const playerInput = byId("game-player");
+    const topList = byId("game-top-list");
+    const recentList = byId("game-recent-list");
+
     if (!startGameBtn || !heartBtn || !gameTime || !gameScore || !gameMessage) return;
 
     let timer = null;
     let score = 0;
     let timeLeft = 15;
 
+    async function fetchLeaderboard() {
+      if (!topList || !recentList) return;
+      try {
+        const [topRes, recentRes] = await Promise.all([
+          fetch('/api/game-scores/top'),
+          fetch('/api/game-scores/recent')
+        ]);
+        if (!topRes.ok || !recentRes.ok) throw new Error('leaderboard fetch failed');
+        const top = await topRes.json();
+        const recent = await recentRes.json();
+
+        topList.innerHTML = '';
+        if (top.length === 0) {
+          const li = document.createElement('li');
+          li.textContent = 'No scores yet.';
+          topList.appendChild(li);
+        } else {
+          top.forEach(function (row) {
+            const li = document.createElement('li');
+            li.textContent = `${row.player}: ${row.bestScore}`;
+            topList.appendChild(li);
+          });
+        }
+
+        recentList.innerHTML = '';
+        if (recent.length === 0) {
+          const li = document.createElement('li');
+          li.textContent = 'No runs yet.';
+          recentList.appendChild(li);
+        } else {
+          recent.forEach(function (row) {
+            const li = document.createElement('li');
+            li.textContent = `${row.player}: ${row.score} (${row.createdAt})`;
+            recentList.appendChild(li);
+          });
+        }
+      } catch (_error) {
+        topList.innerHTML = '<li>Could not load leaderboard.</li>';
+        recentList.innerHTML = '<li>Could not load recent runs.</li>';
+      }
+    }
+
+    async function submitScore(finalScore) {
+      if (!playerInput) return;
+      const player = playerInput.value.trim();
+      if (!player) {
+        gameMessage.textContent = `Final score: ${finalScore}. Enter your name to save score.`;
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/game-scores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ player, score: finalScore })
+        });
+        if (!response.ok) throw new Error('save failed');
+        gameMessage.textContent = `Final score: ${finalScore}. Saved for ${player}.`;
+        fetchLeaderboard();
+      } catch (_error) {
+        gameMessage.textContent = `Final score: ${finalScore}. Could not save score.`;
+      }
+    }
+
     function stopGame() {
       clearInterval(timer);
       timer = null;
       heartBtn.disabled = true;
       startGameBtn.disabled = false;
-      gameMessage.textContent = `Final score: ${score}.`;
+      submitScore(score);
     }
 
     startGameBtn.addEventListener("click", function () {
@@ -424,7 +872,10 @@
       score += 1;
       gameScore.textContent = String(score);
     });
+
+    fetchLeaderboard();
   }
+
 
   initSharedHeader();
   initLockedHuntOverlay();
