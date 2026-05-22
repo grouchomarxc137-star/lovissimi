@@ -454,12 +454,15 @@
       const img = document.createElement("img");
       img.src = item.image;
       img.alt = item.caption;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.fetchPriority = "low";
       img.onerror = function () {
         this.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='100%25' height='100%25' fill='%23f1dfaa'/><text x='50%25' y='50%25' text-anchor='middle' fill='%237a6745' font-size='16' font-family='sans-serif'>Add image file</text></svg>";
       };
       img.style.cursor = "zoom-in";
       img.addEventListener("click", function () {
-        openLightbox(item.image, item.caption);
+        openLightbox(item.full || item.image, item.caption);
       });
 
       const caption = document.createElement("p");
