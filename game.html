@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game | Our Golden Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar"><h1>Our Golden Story</h1></header>
+  <main>
+    <section class="card hero">
+      <p class="eyebrow">Chapter: Mini Game</p>
+      <h2>Catch The Heart</h2>
+      <p><a class="back-link" href="index.html">← Back to Home</a></p>
+    </section>
+    <section class="card">
+      <p class="muted">Click the heart as many times as you can in 15 seconds.</p>
+      <div class="game-panel">
+        <button id="start-game">Start</button>
+        <div class="game-stats">
+          <span>Time: <strong id="game-time">15</strong>s</span>
+          <span>Score: <strong id="game-score">0</strong></span>
+        </div>
+        <button id="heart-btn" class="heart-btn" disabled>❤</button>
+      </div>
+      <p id="game-message" class="muted"></p>
+    </section>
+  </main>
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

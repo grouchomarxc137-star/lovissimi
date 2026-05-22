@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moments | Our Golden Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar"><h1>Our Golden Story</h1></header>
+  <main>
+    <section class="card hero">
+      <p class="eyebrow">Chapter: Moments</p>
+      <h2>Our Timers</h2>
+      <p class="subtitle">Live since-counters and anniversary countdowns.</p>
+      <p><a class="back-link" href="index.html">← Back to Home</a></p>
+    </section>
+
+    <section class="card">
+      <div class="stats-grid">
+        <article class="stat-box">
+          <h4>Since we started speaking</h4>
+          <p id="started-counter" class="counter">Loading...</p>
+          <small id="started-date"></small><br />
+          <small id="started-anniversary-date"></small><br />
+          <small id="started-anniversary-counter"></small>
+        </article>
+        <article class="stat-box">
+          <h4>Since we first met</h4>
+          <p id="met-counter" class="counter">Loading...</p>
+          <small id="met-date"></small><br />
+          <small id="met-anniversary-date"></small><br />
+          <small id="met-anniversary-counter"></small>
+        </article>
+        <article class="stat-box">
+          <h4>Since we became official</h4>
+          <p id="official-counter" class="counter">Loading...</p>
+          <small id="official-date"></small><br />
+          <small id="official-anniversary-date"></small><br />
+          <small id="official-anniversary-counter"></small>
+        </article>
+        <article class="stat-box">
+          <h4>Since our first date</h4>
+          <p id="first-date-counter" class="counter">Loading...</p>
+          <small id="first-date-date"></small><br />
+          <small id="first-date-anniversary-date"></small><br />
+          <small id="first-date-anniversary-counter"></small>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,15 +1,15 @@
 :root {
-  --bg: #fff9e8;
-  --bg-soft: #fff2cc;
-  --card: #fffef8;
-  --gold: #d9a300;
-  --gold-deep: #b58500;
-  --text: #3e2f16;
-  --muted: #7a6745;
-  --accent: #ffcc4d;
+  --bg: #fff6df;
+  --bg-soft: #ffeab8;
+  --card: rgba(255, 247, 225, 0.78);
+  --gold: #f09a22;
+  --gold-deep: #c76c16;
+  --text: #3a240c;
+  --muted: #714b24;
+  --accent: #ffd05c;
   --danger: #b33131;
   --radius: 18px;
-  --shadow: 0 10px 30px rgba(180, 133, 0, 0.15);
+  --shadow: 0 10px 30px rgba(145, 77, 12, 0.25);
 }
 
 * {
@@ -20,38 +20,58 @@ body {
   margin: 0;
   font-family: "Nunito", sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 15% 10%, #fff5d8 0%, var(--bg) 40%, #ffefbf 100%);
   line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image:
+    linear-gradient(rgba(255, 162, 62, 0.2), rgba(255, 198, 94, 0.2)),
+    radial-gradient(circle at 18% 12%, rgba(255, 210, 100, 0.45), rgba(255, 255, 255, 0) 45%),
+    url("assets/images/love-birds-bg.png");
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 80% 10%, rgba(255, 226, 153, 0.26), transparent 40%),
+    radial-gradient(circle at 15% 85%, rgba(255, 174, 92, 0.22), transparent 38%);
+  z-index: 0;
+}
+
+main,
+.topbar,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 .topbar {
   position: sticky;
   top: 0;
   z-index: 10;
-  backdrop-filter: blur(8px);
-  background: rgba(255, 248, 220, 0.85);
-  border-bottom: 1px solid rgba(181, 133, 0, 0.2);
-  padding: 0.8rem 1rem;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 235, 178, 0.76);
+  border-bottom: 1px solid rgba(181, 104, 14, 0.35);
+  padding: 0.95rem 1rem;
 }
 
 .topbar h1 {
   margin: 0;
   font-family: "Playfair Display", serif;
   font-size: 1.4rem;
-}
-
-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  margin-top: 0.4rem;
-}
-
-nav a {
-  color: var(--gold-deep);
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 0.92rem;
+  text-align: center;
 }
 
 main {
@@ -64,14 +84,22 @@ main {
 
 .card {
   background: var(--card);
-  border: 1px solid rgba(181, 133, 0, 0.25);
+  border: 1px solid rgba(181, 104, 14, 0.3);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 1rem;
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  padding: 1.1rem;
+  backdrop-filter: blur(5px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(145, 77, 12, 0.28);
 }
 
 .hero {
-  background: linear-gradient(140deg, #fff7de, #ffe8a3);
+  background: linear-gradient(140deg, rgba(255, 237, 190, 0.96), rgba(255, 183, 101, 0.9));
+  padding: 1.5rem 1.2rem;
 }
 
 .eyebrow {
@@ -88,6 +116,14 @@ h2, h3, h4 {
   margin: 0.35rem 0 0.6rem;
 }
 
+h2 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+h3 {
+  font-size: clamp(1.35rem, 3vw, 1.6rem);
+}
+
 .subtitle,
 .muted {
   color: var(--muted);
@@ -100,10 +136,11 @@ h2, h3, h4 {
 }
 
 .stat-box {
-  background: var(--bg-soft);
+  background: rgba(255, 230, 163, 0.9);
   border-radius: 14px;
   padding: 0.8rem;
-  border: 1px solid rgba(181, 133, 0, 0.2);
+  border: 1px solid rgba(181, 104, 14, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .counter {
@@ -121,17 +158,28 @@ h2, h3, h4 {
 input,
 button {
   border-radius: 10px;
-  border: 1px solid rgba(181, 133, 0, 0.35);
+  border: 1px solid rgba(181, 104, 14, 0.35);
   padding: 0.55rem 0.75rem;
   font: inherit;
 }
 
+input {
+  background: rgba(255, 250, 238, 0.9);
+  color: var(--text);
+}
+
 button {
-  background: var(--gold);
+  background: linear-gradient(180deg, #f7ac38, #e98a16);
   color: #fff;
   border: none;
   cursor: pointer;
   font-weight: 700;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
 }
 
 button:disabled {
@@ -141,7 +189,7 @@ button:disabled {
 
 .reveal-box {
   margin-top: 0.6rem;
-  background: #fff5cf;
+  background: rgba(255, 228, 157, 0.9);
   border-radius: 12px;
   padding: 0.8rem;
 }
@@ -163,8 +211,9 @@ button:disabled {
 }
 
 .tab {
-  background: #f1dfaa;
+  background: #f4cf8b;
   color: var(--text);
+  border: 1px solid rgba(181, 104, 14, 0.25);
 }
 
 .tab.active {
@@ -180,9 +229,15 @@ button:disabled {
 
 .gallery-item {
   border-radius: 12px;
-  background: #ffefbe;
-  border: 1px solid rgba(181, 133, 0, 0.25);
+  background: rgba(255, 226, 160, 0.9);
+  border: 1px solid rgba(181, 104, 14, 0.25);
   overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.gallery-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(131, 67, 10, 0.2);
 }
 
 .gallery-item img {
@@ -205,6 +260,7 @@ button:disabled {
 
 .timeline-list li {
   margin-bottom: 0.65rem;
+  padding-left: 0.2rem;
 }
 
 .game-panel {
@@ -222,9 +278,10 @@ button:disabled {
   width: 90px;
   height: 90px;
   border-radius: 999px;
-  background: #ffd24d;
+  background: radial-gradient(circle at 35% 30%, #ffd171, #f39a2a);
   color: #9f2020;
   justify-self: start;
+  box-shadow: 0 8px 18px rgba(159, 32, 32, 0.25);
 }
 
 .letters-list {
@@ -233,7 +290,7 @@ button:disabled {
 }
 
 .letter {
-  background: #fff4d0;
+  background: rgba(255, 228, 169, 0.9);
   border-left: 4px solid var(--gold);
   padding: 0.6rem 0.75rem;
   border-radius: 8px;
@@ -249,8 +306,25 @@ button:disabled {
 
 footer {
   text-align: center;
-  color: var(--muted);
+  color: #ffe9be;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
   padding: 1.2rem;
+  margin-top: auto;
+}
+
+@keyframes gentle-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: gentle-rise 0.45s ease both;
 }
 
 @media (max-width: 680px) {
@@ -258,7 +332,102 @@ footer {
     font-size: 1.2rem;
   }
 
-  nav a {
-    font-size: 0.85rem;
+  body {
+    background-attachment: scroll;
   }
+}
+
+.home-cute {
+  text-align: center;
+}
+
+.cute-message {
+  margin: 0.35rem auto;
+  max-width: 60ch;
+  color: #5d3515;
+  font-weight: 600;
+}
+
+.home-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+.nav-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-decoration: none;
+  color: var(--text);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 242, 0.96), rgba(255, 240, 204, 0.96));
+  border: 1px solid rgba(181, 104, 14, 0.22);
+  border-radius: 10px;
+  padding: 1rem 0.85rem 0.9rem;
+  min-height: 120px;
+  position: relative;
+  box-shadow:
+    0 10px 20px rgba(95, 52, 14, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.nav-card:hover {
+  transform: translateY(-4px) rotate(0deg) !important;
+  box-shadow:
+    0 14px 24px rgba(95, 52, 14, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.nav-card::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 58px;
+  height: 14px;
+  transform: translateX(-50%) rotate(-2deg);
+  background: rgba(255, 214, 130, 0.8);
+  border: 1px solid rgba(196, 125, 38, 0.25);
+  border-radius: 3px;
+}
+
+.nav-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 10px 10px 10px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(207, 128, 40, 0), rgba(207, 128, 40, 0.45), rgba(207, 128, 40, 0));
+}
+
+.home-links-grid .nav-card:nth-child(odd) {
+  transform: rotate(-1.2deg);
+}
+
+.home-links-grid .nav-card:nth-child(even) {
+  transform: rotate(1.2deg);
+}
+
+.nav-card strong {
+  font-family: "Playfair Display", serif;
+  font-size: 1.08rem;
+  margin-top: 0.25rem;
+}
+
+.nav-card span {
+  color: #6d4420;
+  font-size: 0.92rem;
+}
+
+.back-link {
+  color: #9b4f0d;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
 }

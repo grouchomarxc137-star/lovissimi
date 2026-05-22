@@ -3,7 +3,9 @@ window.siteData = {
     title: "Laura + You",
     subtitle: "Warm memories, tiny moments, forever energy.",
     startedSpeakingDate: "2024-03-12T20:30:00",
-    officialDate: "2024-06-01T18:00:00"
+    firstMetDate: "2024-04-20T17:00:00",
+    officialDate: "2024-01-29T18:00:00",
+    firstDateDate: "2024-05-03T19:30:00"
   },
   hunt: {
     password: "sunflower",
@@ -39,9 +41,9 @@ window.siteData = {
   },
   timeline: [
     { date: "2024-03-12", title: "Started speaking", note: "The first long conversation." },
-    { date: "2024-04-09", title: "First call", note: "Said goodnight three times." },
-    { date: "2024-06-01", title: "Became official", note: "Golden day." },
-    { date: "2024-08-15", title: "First trip", note: "Tiny adventure, huge memory." }
+    { date: "2024-04-20", title: "First met", note: "Nervous smiles and easy vibes." },
+    { date: "2024-01-29", title: "Became official", note: "Golden day." },
+    { date: "2024-05-03", title: "First date", note: "Tiny adventure, huge memory." }
   ],
   letters: [
     "I still remember the exact second you said <redacted> and everything felt lighter.",
