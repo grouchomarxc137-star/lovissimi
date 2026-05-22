@@ -7,7 +7,7 @@
   }
 
   function formatDate(date) {
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric"
@@ -15,20 +15,36 @@
   }
 
   function getDurationParts(from, to) {
-    const diffMs = Math.max(0, to - from);
+    if (to <= from) {
+      return { months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    let months =
+      (to.getFullYear() - from.getFullYear()) * 12 +
+      (to.getMonth() - from.getMonth());
+
+    const anchor = new Date(from);
+    anchor.setMonth(anchor.getMonth() + months);
+    if (anchor > to) {
+      months -= 1;
+      anchor.setMonth(anchor.getMonth() - 1);
+    }
+
+    const diffMs = Math.max(0, to - anchor);
     const totalSeconds = Math.floor(diffMs / 1000);
     const days = Math.floor(totalSeconds / 86400);
     const hours = Math.floor((totalSeconds % 86400) / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    return { days, hours, minutes, seconds };
+    return { months, days, hours, minutes, seconds };
   }
 
-  function getNextYearlyAnniversary(baseDate) {
+  function getNextMonthlyAnniversary(baseDate) {
     const now = new Date();
     const next = new Date(baseDate);
-    next.setFullYear(now.getFullYear());
-    if (next <= now) next.setFullYear(now.getFullYear() + 1);
+    while (next <= now) {
+      next.setMonth(next.getMonth() + 1);
+    }
     return next;
   }
 
@@ -64,13 +80,6 @@
         fromDateEl: byId("official-date"),
         annDateEl: byId("official-anniversary-date"),
         annCounterEl: byId("official-anniversary-counter")
-      },
-      {
-        date: new Date(data.relationship.firstDateDate),
-        counterEl: byId("first-date-counter"),
-        fromDateEl: byId("first-date-date"),
-        annDateEl: byId("first-date-anniversary-date"),
-        annCounterEl: byId("first-date-anniversary-counter")
       }
     ];
 
@@ -79,16 +88,16 @@
       events.forEach(function (eventItem) {
         if (!eventItem.counterEl) return;
         const since = getDurationParts(eventItem.date, now);
-        eventItem.counterEl.textContent = `${since.days}d ${since.hours}h ${since.minutes}m ${since.seconds}s`;
+        eventItem.counterEl.textContent = `${since.months}mo ${since.days}d ${since.hours}h ${since.minutes}m ${since.seconds}s`;
         if (eventItem.fromDateEl) {
           eventItem.fromDateEl.textContent = "From: " + formatDate(eventItem.date);
         }
 
-        const nextAnniversary = getNextYearlyAnniversary(eventItem.date);
+        const nextAnniversary = getNextMonthlyAnniversary(eventItem.date);
         const untilAnniversary = getDurationParts(now, nextAnniversary);
 
         if (eventItem.annDateEl) {
-          eventItem.annDateEl.textContent = "Anniversary: " + formatDate(nextAnniversary);
+          eventItem.annDateEl.textContent = "Monthly anniversary: " + formatDate(nextAnniversary);
         }
         if (eventItem.annCounterEl) {
           eventItem.annCounterEl.textContent = `In: ${untilAnniversary.days}d ${untilAnniversary.hours}h ${untilAnniversary.minutes}m ${untilAnniversary.seconds}s`;

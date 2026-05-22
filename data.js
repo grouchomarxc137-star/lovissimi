@@ -1,10 +1,10 @@
 window.siteData = {
   relationship: {
-    title: "Laura + You",
+    title: "👸🏽💛🤴🏽",
     subtitle: "Warm memories, tiny moments, forever energy.",
-    startedSpeakingDate: "2024-03-12T20:30:00",
-    firstMetDate: "2024-04-20T17:00:00",
-    officialDate: "2024-01-29T18:00:00",
+    startedSpeakingDate: "2025-11-07T23:59:00",
+    firstMetDate: "2026-02-13T00:00:00",
+    officialDate: "2026-01-29T18:00:00",
     firstDateDate: "2024-05-03T19:30:00"
   },
   hunt: {
