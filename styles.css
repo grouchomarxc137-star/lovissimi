@@ -1,0 +1,264 @@
+:root {
+  --bg: #fff9e8;
+  --bg-soft: #fff2cc;
+  --card: #fffef8;
+  --gold: #d9a300;
+  --gold-deep: #b58500;
+  --text: #3e2f16;
+  --muted: #7a6745;
+  --accent: #ffcc4d;
+  --danger: #b33131;
+  --radius: 18px;
+  --shadow: 0 10px 30px rgba(180, 133, 0, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Nunito", sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 15% 10%, #fff5d8 0%, var(--bg) 40%, #ffefbf 100%);
+  line-height: 1.5;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 248, 220, 0.85);
+  border-bottom: 1px solid rgba(181, 133, 0, 0.2);
+  padding: 0.8rem 1rem;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 1.4rem;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 0.4rem;
+}
+
+nav a {
+  color: var(--gold-deep);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+main {
+  max-width: 980px;
+  margin: 1.2rem auto 2rem;
+  padding: 0 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid rgba(181, 133, 0, 0.25);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+
+.hero {
+  background: linear-gradient(140deg, #fff7de, #ffe8a3);
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--gold-deep);
+  font-size: 0.8rem;
+}
+
+h2, h3, h4 {
+  font-family: "Playfair Display", serif;
+  margin: 0.35rem 0 0.6rem;
+}
+
+.subtitle,
+.muted {
+  color: var(--muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.stat-box {
+  background: var(--bg-soft);
+  border-radius: 14px;
+  padding: 0.8rem;
+  border: 1px solid rgba(181, 133, 0, 0.2);
+}
+
+.counter {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0.3rem 0;
+}
+
+.inline-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+input,
+button {
+  border-radius: 10px;
+  border: 1px solid rgba(181, 133, 0, 0.35);
+  padding: 0.55rem 0.75rem;
+  font: inherit;
+}
+
+button {
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reveal-box {
+  margin-top: 0.6rem;
+  background: #fff5cf;
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.clean-list {
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.tab {
+  background: #f1dfaa;
+  color: var(--text);
+}
+
+.tab.active {
+  background: var(--gold);
+  color: #fff;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.6rem;
+}
+
+.gallery-item {
+  border-radius: 12px;
+  background: #ffefbe;
+  border: 1px solid rgba(181, 133, 0, 0.25);
+  overflow: hidden;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-item p {
+  margin: 0;
+  padding: 0.45rem 0.55rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.timeline-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.timeline-list li {
+  margin-bottom: 0.65rem;
+}
+
+.game-panel {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.game-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.heart-btn {
+  font-size: 2rem;
+  width: 90px;
+  height: 90px;
+  border-radius: 999px;
+  background: #ffd24d;
+  color: #9f2020;
+  justify-self: start;
+}
+
+.letters-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.letter {
+  background: #fff4d0;
+  border-left: 4px solid var(--gold);
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+}
+
+.redacted {
+  background: #1f1f1f;
+  color: transparent;
+  border-radius: 4px;
+  padding: 0 0.3rem;
+  user-select: none;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 1.2rem;
+}
+
+@media (max-width: 680px) {
+  .topbar h1 {
+    font-size: 1.2rem;
+  }
+
+  nav a {
+    font-size: 0.85rem;
+  }
+}

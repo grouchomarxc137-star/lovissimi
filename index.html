@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Golden Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Our Golden Story</h1>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#milestones">Milestones</a>
+      <a href="#hunt">Hunt</a>
+      <a href="#signs">Laura Signs</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#game">Game</a>
+      <a href="#letters">Letters</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="card hero">
+      <p class="eyebrow">A little corner for us</p>
+      <h2 id="relationship-title">Laura + You</h2>
+      <p class="subtitle" id="relationship-subtitle">Warm memories, tiny moments, forever energy.</p>
+    </section>
+
+    <section id="milestones" class="card">
+      <h3>Milestones</h3>
+      <div class="stats-grid">
+        <article class="stat-box">
+          <h4>Since we started speaking</h4>
+          <p id="started-counter" class="counter">Loading...</p>
+          <small id="started-date"></small>
+        </article>
+        <article class="stat-box">
+          <h4>Since we became official</h4>
+          <p id="official-counter" class="counter">Loading...</p>
+          <small id="official-date"></small>
+        </article>
+        <article class="stat-box">
+          <h4>Next monthly anniversary</h4>
+          <p id="monthly-counter" class="counter">Loading...</p>
+          <small id="monthly-date"></small>
+        </article>
+      </div>
+    </section>
+
+    <section id="hunt" class="card">
+      <h3>Hunt (Locked)</h3>
+      <p class="muted">Enter the password to reveal the secret clue.</p>
+      <form id="hunt-form" class="inline-form">
+        <input id="hunt-password" type="password" placeholder="Password" required />
+        <button type="submit">Unlock</button>
+      </form>
+      <p id="hunt-message" class="muted"></p>
+      <div id="hunt-content" class="hidden reveal-box">
+        <h4>Golden Clue</h4>
+        <p id="hunt-text"></p>
+      </div>
+    </section>
+
+    <section id="signs" class="card">
+      <h3>Laura Signs / Lore</h3>
+      <ul id="signs-list" class="clean-list"></ul>
+    </section>
+
+    <section id="gallery" class="card">
+      <h3>Gallery</h3>
+      <div class="category-tabs" id="gallery-tabs"></div>
+      <div id="gallery-grid" class="gallery-grid"></div>
+    </section>
+
+    <section id="timeline" class="card">
+      <h3>Relationship Timeline</h3>
+      <ol id="timeline-list" class="timeline-list"></ol>
+    </section>
+
+    <section id="game" class="card">
+      <h3>Mini Game: Catch the Heart</h3>
+      <p class="muted">Click the heart as many times as you can in 15 seconds.</p>
+      <div class="game-panel">
+        <button id="start-game">Start</button>
+        <div class="game-stats">
+          <span>Time: <strong id="game-time">15</strong>s</span>
+          <span>Score: <strong id="game-score">0</strong></span>
+        </div>
+        <button id="heart-btn" class="heart-btn" disabled>❤</button>
+      </div>
+      <p id="game-message" class="muted"></p>
+    </section>
+
+    <section id="letters" class="card">
+      <h3>Redacted Love Letters</h3>
+      <div id="letters-list" class="letters-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built with love, sunlight, and vanilla JS.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
