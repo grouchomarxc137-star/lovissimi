@@ -14,6 +14,19 @@ if (!fs.existsSync(dataDir)) {
 const dbPath = path.join(dataDir, "loveboard.db");
 const db = new sqlite3.Database(dbPath);
 
+function formatItalyDateTime() {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Rome",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  }).format(new Date());
+}
+
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS messages (
@@ -80,7 +93,7 @@ app.post("/api/messages", (req, res) => {
     return res.status(400).json({ error: "Author and message are required" });
   }
 
-  const createdAt = new Date().toLocaleString("en-US");
+  const createdAt = formatItalyDateTime();
   db.run(
     "INSERT INTO messages(author, message, created_at) VALUES(?, ?, ?)",
     [author, message, createdAt],
@@ -137,7 +150,7 @@ app.post("/api/letters", (req, res) => {
     return res.status(400).json({ error: "Author and message are required" });
   }
 
-  const createdAt = new Date().toLocaleString("en-US");
+  const createdAt = formatItalyDateTime();
   db.run(
     "INSERT INTO letters(author, message, created_at) VALUES(?, ?, ?)",
     [author, message, createdAt],
@@ -194,7 +207,7 @@ app.post("/api/stick-notes", (req, res) => {
     return res.status(400).json({ error: "Author and message are required" });
   }
 
-  const createdAt = new Date().toLocaleString("en-US");
+  const createdAt = formatItalyDateTime();
   db.run(
     "INSERT INTO stick_notes(author, message, created_at, x, y) VALUES(?, ?, ?, NULL, NULL)",
     [author, message, createdAt],
@@ -284,7 +297,7 @@ app.post("/api/game-scores", (req, res) => {
     return res.status(400).json({ error: "Valid player and score are required" });
   }
 
-  const createdAt = new Date().toLocaleString("en-US");
+  const createdAt = formatItalyDateTime();
   db.run(
     "INSERT INTO game_scores(player, score, created_at) VALUES(?, ?, ?)",
     [player, score, createdAt],
