@@ -67,6 +67,17 @@ db.serialize(() => {
       created_at TEXT NOT NULL
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS mood_entries (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      person TEXT NOT NULL,
+      mood_date TEXT NOT NULL,
+      mood_value INTEGER NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(person, mood_date)
+    )
+  `);
 });
 
 app.use(express.json());
@@ -306,6 +317,69 @@ app.post("/api/game-scores", (req, res) => {
         return res.status(500).json({ error: "Failed to save game score" });
       }
       return res.status(201).json({ id: this.lastID, player, score, createdAt });
+    }
+  );
+});
+
+app.get("/api/moods", (req, res) => {
+  const person = String(req.query.person || "").trim().toLowerCase();
+  const month = String(req.query.month || "").trim();
+
+  if (!["principessa", "principe"].includes(person) || !/^\d{4}-\d{2}$/.test(month)) {
+    return res.status(400).json({ error: "Valid person and month are required" });
+  }
+
+  db.all(
+    `SELECT mood_date AS date, mood_value AS mood
+     FROM mood_entries
+     WHERE person = ? AND substr(mood_date, 1, 7) = ?
+     ORDER BY mood_date ASC`,
+    [person, month],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to fetch moods" });
+      }
+      return res.json(rows);
+    }
+  );
+});
+
+app.put("/api/moods", (req, res) => {
+  const person = String(req.body.person || "").trim().toLowerCase();
+  const date = String(req.body.date || "").trim();
+  const mood = Number(req.body.mood);
+
+  if (!["principessa", "principe"].includes(person) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isInteger(mood) || mood < 1 || mood > 5) {
+    return res.status(400).json({ error: "Invalid mood payload" });
+  }
+
+  const updatedAt = formatItalyDateTime();
+  db.run(
+    `INSERT INTO mood_entries(person, mood_date, mood_value, updated_at)
+     VALUES(?, ?, ?, ?)
+     ON CONFLICT(person, mood_date)
+     DO UPDATE SET mood_value = excluded.mood_value, updated_at = excluded.updated_at`,
+    [person, date, mood, updatedAt],
+    function onUpsert(err) {
+      if (err) {
+        return res.status(500).json({ error: "Failed to save mood" });
+      }
+      return res.status(200).json({ ok: true, person, date, mood, updatedAt });
+    }
+  );
+});
+
+app.get("/api/moods/archive", (_req, res) => {
+  db.all(
+    `SELECT person, substr(mood_date, 1, 7) AS month, mood_date AS date, mood_value AS mood
+     FROM mood_entries
+     ORDER BY month DESC, mood_date ASC`,
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to fetch mood archive" });
+      }
+      return res.json(rows);
     }
   );
 });

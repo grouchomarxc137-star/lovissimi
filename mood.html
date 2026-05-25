@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mood Tracker | To the Principessa that stole my heart. I adore you💛</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar"><h1>To the Principessa that stole my heart. I adore you💛</h1></header>
+  <main>
+    <section class="card hero mood-desc-card">
+      <p class="eyebrow">Chapter: Mood Tracker</p>
+      <h2>Monthly Mood Tracker</h2>
+      <p class="subtitle">Choose Principessa or Principe, then color each day with a mood.</p>
+      <p><a class="back-link" href="index.html">← Back to Home</a></p>
+    </section>
+
+    <section class="card mood-content-card">
+      <div id="mood-chooser" class="mood-chooser">
+        <button id="choose-principessa" type="button">Principessa</button>
+        <button id="choose-principe" type="button">Principe</button>
+      </div>
+
+      <div id="mood-tracker-panel" class="mood-panel hidden">
+        <div class="mood-panel-head">
+          <h3>Mood Tracker</h3>
+          <span id="mood-person-title" class="mood-person-badge">Principessa</span>
+          <div class="inline-form mood-month-controls">
+            <button id="mood-prev-month" type="button">←</button>
+            <strong id="mood-month-label"></strong>
+            <button id="mood-next-month" type="button">→</button>
+          </div>
+        </div>
+
+        <div id="mood-grid" class="mood-grid"></div>
+
+        <div class="mood-controls">
+          <label>
+            Day
+            <input id="mood-date" type="date" />
+          </label>
+          <label>
+            Mood
+            <select id="mood-value">
+              <option value="1">1 - Very Low</option>
+              <option value="2">2 - Low</option>
+              <option value="3">3 - Neutral</option>
+              <option value="4">4 - Good</option>
+              <option value="5">5 - Amazing</option>
+            </select>
+          </label>
+          <button id="mood-save" type="button">Save Mood</button>
+        </div>
+
+        <div class="mood-legend">
+          <span><i class="mood-chip mood-1"></i>1 Very Low</span>
+          <span><i class="mood-chip mood-2"></i>2 Low</span>
+          <span><i class="mood-chip mood-3"></i>3 Neutral</span>
+          <span><i class="mood-chip mood-4"></i>4 Good</span>
+          <span><i class="mood-chip mood-5"></i>5 Amazing</span>
+        </div>
+        <p id="mood-message" class="muted"></p>
+      </div>
+
+    </section>
+  </main>
+  <footer>
+    <p>Built with love, care, and attention</p>
+  </footer>
+  <script src="data.js?v=20260525b"></script>
+  <script src="script.js?v=20260525b"></script>
+</body>
+</html>

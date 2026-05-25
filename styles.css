@@ -80,6 +80,7 @@ main {
   padding: 0 1rem;
   display: grid;
   gap: 1rem;
+  align-content: start;
 }
 
 .card {
@@ -960,4 +961,142 @@ footer {
 
 #game-player {
   max-width: 260px;
+}
+
+.mood-desc-card,
+.mood-content-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+.mood-chooser {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  width: min(320px, 100%);
+}
+
+.mood-chooser button {
+  display: block;
+  inline-size: 100%;
+  min-width: 0;
+}
+
+.mood-panel {
+  margin-top: 1rem;
+}
+
+.mood-panel-head {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.mood-month-controls {
+  justify-self: end;
+  align-items: center;
+}
+
+.mood-person-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 128px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(143, 88, 29, 0.28);
+  background: rgba(255, 235, 191, 0.72);
+  color: #6a401b;
+  font-weight: 700;
+}
+
+.mood-grid {
+  margin-top: 0.7rem;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(34px, 1fr));
+  gap: 0.4rem;
+}
+
+.mood-day {
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid rgba(143, 88, 29, 0.3);
+  background: rgba(255, 247, 231, 0.92);
+  color: #4f3418;
+  font-weight: 700;
+  padding: 0;
+}
+
+.mood-controls {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.6rem;
+  align-items: end;
+}
+
+.mood-controls label {
+  display: grid;
+  gap: 0.35rem;
+  color: #5f3f1f;
+  font-weight: 700;
+}
+
+.mood-controls select {
+  border-radius: 10px;
+  border: 1px solid rgba(181, 104, 14, 0.35);
+  padding: 0.55rem 0.75rem;
+  font: inherit;
+  background: rgba(255, 250, 238, 0.9);
+  color: var(--text);
+}
+
+.mood-legend {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.8rem;
+  color: #6e4921;
+  font-size: 0.92rem;
+}
+
+.mood-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mood-chip {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(120, 74, 27, 0.3);
+  display: inline-block;
+}
+
+.mood-1 { background: #8c4d1f !important; }
+.mood-2 { background: #ffe9c9 !important; }
+.mood-3 { background: #ffd7a4 !important; }
+.mood-4 { background: #ffbe76 !important; }
+.mood-5 { background: #f09a22 !important; }
+
+.mood-day.mood-1 {
+  color: #fff5e6;
+}
+
+@media (max-width: 680px) {
+  .mood-panel-head {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .mood-month-controls {
+    justify-self: start;
+  }
+
+  .mood-day {
+    height: 36px;
+    font-size: 0.84rem;
+  }
 }

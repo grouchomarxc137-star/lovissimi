@@ -814,12 +814,167 @@
     fetchLeaderboard();
   }
 
+  function initMoodPage() {
+    const chooser = byId("mood-chooser");
+    if (!chooser) return;
+
+    const trackerPanel = byId("mood-tracker-panel");
+    const choosePrincipessa = byId("choose-principessa");
+    const choosePrincipe = byId("choose-principe");
+    const personTitle = byId("mood-person-title");
+    const monthLabel = byId("mood-month-label");
+    const prevMonthBtn = byId("mood-prev-month");
+    const nextMonthBtn = byId("mood-next-month");
+    const grid = byId("mood-grid");
+    const dateInput = byId("mood-date");
+    const moodSelect = byId("mood-value");
+    const saveBtn = byId("mood-save");
+    const messageEl = byId("mood-message");
+
+    const personNames = { principessa: "Principessa", principe: "Principe" };
+    let activePerson = "";
+    let activeMonth = "";
+    let monthData = {};
+
+    function getTodayInRome() {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Rome",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+      const map = {};
+      parts.forEach(function (p) { map[p.type] = p.value; });
+      return `${map.year}-${map.month}-${map.day}`;
+    }
+
+    function formatMonthLabel(month) {
+      const [year, mm] = month.split("-").map(Number);
+      return new Date(year, mm - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    }
+
+    function daysInMonth(month) {
+      const [year, mm] = month.split("-").map(Number);
+      return new Date(year, mm, 0).getDate();
+    }
+
+    function shiftMonth(month, delta) {
+      const [year, mm] = month.split("-").map(Number);
+      const d = new Date(year, mm - 1 + delta, 1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      return `${y}-${m}`;
+    }
+
+    function moodClass(value) {
+      return value >= 1 && value <= 5 ? `mood-${value}` : "";
+    }
+
+    async function loadMonth() {
+      if (!activePerson || !activeMonth) return;
+      try {
+        const response = await fetch(`/api/moods?person=${encodeURIComponent(activePerson)}&month=${encodeURIComponent(activeMonth)}`);
+        if (!response.ok) throw new Error("Fetch failed");
+        const rows = await response.json();
+        monthData = {};
+        rows.forEach(function (row) {
+          monthData[row.date] = row.mood;
+        });
+        renderMonth();
+      } catch (_error) {
+        messageEl.textContent = "Could not load moods right now.";
+      }
+    }
+
+    function renderMonth() {
+      if (!grid) return;
+      grid.innerHTML = "";
+      monthLabel.textContent = formatMonthLabel(activeMonth);
+
+      const totalDays = daysInMonth(activeMonth);
+      for (let day = 1; day <= totalDays; day += 1) {
+        const dayStr = String(day).padStart(2, "0");
+        const date = `${activeMonth}-${dayStr}`;
+        const moodValue = monthData[date];
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = `mood-day ${moodClass(moodValue)}`.trim();
+        cell.textContent = String(day);
+        cell.addEventListener("click", function () {
+          dateInput.value = date;
+          if (moodValue) moodSelect.value = String(moodValue);
+        });
+        grid.appendChild(cell);
+      }
+    }
+
+    function openTracker(person) {
+      activePerson = person;
+      activeMonth = getTodayInRome().slice(0, 7);
+      monthData = {};
+      personTitle.textContent = personNames[person];
+      dateInput.value = getTodayInRome();
+      trackerPanel.classList.remove("hidden");
+      messageEl.textContent = "";
+      loadMonth();
+    }
+
+    choosePrincipessa.addEventListener("click", function () { openTracker("principessa"); });
+    choosePrincipe.addEventListener("click", function () { openTracker("principe"); });
+
+    prevMonthBtn.addEventListener("click", function () {
+      if (!activeMonth) return;
+      activeMonth = shiftMonth(activeMonth, -1);
+      loadMonth();
+    });
+
+    nextMonthBtn.addEventListener("click", function () {
+      if (!activeMonth) return;
+      activeMonth = shiftMonth(activeMonth, 1);
+      loadMonth();
+    });
+
+    saveBtn.addEventListener("click", async function () {
+      if (!activePerson) return;
+      const date = dateInput.value;
+      const mood = Number(moodSelect.value);
+      if (!date) return;
+
+      try {
+        const response = await fetch("/api/moods", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ person: activePerson, date, mood })
+        });
+        if (!response.ok) throw new Error("Save failed");
+
+        const month = date.slice(0, 7);
+        if (month === activeMonth) {
+          monthData[date] = mood;
+          renderMonth();
+        }
+
+        messageEl.textContent = "Mood saved.";
+        const totalDays = daysInMonth(month);
+        const day = Number(date.slice(8, 10));
+        if (month === activeMonth && day === totalDays) {
+          activeMonth = shiftMonth(activeMonth, 1);
+          dateInput.value = `${activeMonth}-01`;
+          await loadMonth();
+        }
+      } catch (_error) {
+        messageEl.textContent = "Could not save mood right now.";
+      }
+    });
+  }
+
 
   initSharedHeader();
   initLockedHuntOverlay();
   initMomentsPage();
   initHuntPage();
   initSignsPage();
+  initMoodPage();
   initLoveBoardPage();
   initLettersPage();
   initGamePage();
