@@ -409,71 +409,6 @@
   }
 
 
-  function initGalleryPage() {
-    const galleryGrid = byId("gallery-grid");
-    const lightbox = byId("gallery-lightbox");
-    const lightboxImg = byId("gallery-lightbox-image");
-    const lightboxCaption = byId("gallery-lightbox-caption");
-    const lightboxClose = byId("gallery-lightbox-close");
-    if (!galleryGrid) return;
-
-    function closeLightbox() {
-      if (!lightbox) return;
-      lightbox.classList.add("hidden");
-      lightbox.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    function openLightbox(src, caption) {
-      if (!lightbox || !lightboxImg || !lightboxCaption) return;
-      lightboxImg.src = src;
-      lightboxImg.alt = caption;
-      lightboxCaption.textContent = caption;
-      lightbox.classList.remove("hidden");
-      lightbox.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-
-    if (lightbox && lightboxClose) {
-      lightboxClose.addEventListener("click", closeLightbox);
-      lightbox.addEventListener("click", function (event) {
-        if (event.target === lightbox) closeLightbox();
-      });
-      document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") closeLightbox();
-      });
-    }
-
-    galleryGrid.innerHTML = "";
-    const items = Object.values(data.gallery).flat();
-
-    items.forEach(function (item, index) {
-      const wrapper = document.createElement("article");
-      wrapper.className = "gallery-item polaroid-item " + (index % 2 === 0 ? "tilt-left" : "tilt-right");
-
-      const img = document.createElement("img");
-      img.src = item.image;
-      img.alt = item.caption;
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.fetchPriority = "low";
-      img.onerror = function () {
-        this.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='100%25' height='100%25' fill='%23f1dfaa'/><text x='50%25' y='50%25' text-anchor='middle' fill='%237a6745' font-size='16' font-family='sans-serif'>Add image file</text></svg>";
-      };
-      img.style.cursor = "zoom-in";
-      img.addEventListener("click", function () {
-        openLightbox(item.full || item.image, item.caption);
-      });
-
-      const caption = document.createElement("p");
-      caption.textContent = item.caption;
-
-      wrapper.appendChild(img);
-      wrapper.appendChild(caption);
-      galleryGrid.appendChild(wrapper);
-    });
-  }
-
   function initLoveBoardPage() {
     const form = byId("love-board-form");
     const list = byId("love-board-list");
@@ -885,7 +820,6 @@
   initMomentsPage();
   initHuntPage();
   initSignsPage();
-  initGalleryPage();
   initLoveBoardPage();
   initLettersPage();
   initGamePage();
