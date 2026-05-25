@@ -1018,6 +1018,14 @@ footer {
   gap: 0.4rem;
 }
 
+.mood-weekday {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #7a5327;
+  letter-spacing: 0.02em;
+}
+
 .mood-day {
   height: 42px;
   border-radius: 8px;
@@ -1026,6 +1034,10 @@ footer {
   color: #4f3418;
   font-weight: 700;
   padding: 0;
+}
+
+.mood-day-blank {
+  height: 42px;
 }
 
 .mood-controls {
@@ -1098,5 +1110,9 @@ footer {
   .mood-day {
     height: 36px;
     font-size: 0.84rem;
+  }
+
+  .mood-day-blank {
+    height: 36px;
   }
 }

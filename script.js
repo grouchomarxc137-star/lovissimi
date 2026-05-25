@@ -891,6 +891,24 @@
       grid.innerHTML = "";
       monthLabel.textContent = formatMonthLabel(activeMonth);
 
+      const weekLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      weekLabels.forEach(function (label) {
+        const head = document.createElement("div");
+        head.className = "mood-weekday";
+        head.textContent = label;
+        grid.appendChild(head);
+      });
+
+      const [year, mm] = activeMonth.split("-").map(Number);
+      const firstDay = new Date(year, mm - 1, 1);
+      const jsDay = firstDay.getDay(); // 0=Sun .. 6=Sat
+      const mondayBasedOffset = (jsDay + 6) % 7; // 0=Mon .. 6=Sun
+      for (let i = 0; i < mondayBasedOffset; i += 1) {
+        const blank = document.createElement("div");
+        blank.className = "mood-day-blank";
+        grid.appendChild(blank);
+      }
+
       const totalDays = daysInMonth(activeMonth);
       for (let day = 1; day <= totalDays; day += 1) {
         const dayStr = String(day).padStart(2, "0");
